@@ -1,0 +1,6 @@
+{
+  "name": "Cosmic Circuit",
+  "description": "High-end technical minimalism studio transforming ideas into products across hardware, IoT, web, and CAD.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

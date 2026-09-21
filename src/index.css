@@ -1,0 +1,360 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-hanken: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-jetbrains: 'JetBrains Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font-hanken);
+    background-color: #f9faf7;
+    color: #191c1b;
+  }
+}
+
+.font-mono-tech {
+  font-family: var(--font-jetbrains);
+}
+
+.font-display-tech {
+  font-family: var(--font-hanken);
+  letter-spacing: -0.035em;
+}
+
+.cosmic-glow {
+  box-shadow: 0 0 40px rgba(185, 232, 106, 0.15);
+}
+
+.cosmic-glow-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cosmic-glow-hover:hover {
+  box-shadow: 0 12px 40px rgba(185, 232, 106, 0.22);
+  transform: translateY(-4px);
+}
+
+.tech-grid {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.tech-grid-dark {
+  background-image:
+    linear-gradient(to right, rgba(185, 232, 106, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(185, 232, 106, 0.06) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.tech-divider {
+  position: relative;
+}
+
+.tech-divider::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #0A0A0A;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.tech-divider::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #0A0A0A;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Custom scrollbar for tech feel */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f4f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c7c7;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #858383;
+}
+
+/* Navigation Menu Animations */
+@keyframes navMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes navMenuFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+}
+
+@keyframes navItemReveal {
+  from {
+    opacity: 0;
+    transform: translateX(-14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes numberReveal {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes quoteFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-menu-in {
+  animation: navMenuFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-menu-out {
+  animation: navMenuFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-nav-item-0 {
+  animation: navItemReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.animate-number-0 {
+  animation: numberReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both;
+}
+
+.animate-nav-item-1 {
+  animation: navItemReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.14s both;
+}
+
+.animate-number-1 {
+  animation: numberReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.10s both;
+}
+
+.animate-nav-item-2 {
+  animation: navItemReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.20s both;
+}
+
+.animate-number-2 {
+  animation: numberReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.16s both;
+}
+
+.animate-nav-item-3 {
+  animation: navItemReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.26s both;
+}
+
+.animate-number-3 {
+  animation: numberReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+.animate-nav-item-4 {
+  animation: navItemReveal 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+}
+
+.animate-number-4 {
+  animation: numberReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+}
+
+.animate-quote-in {
+  animation: quoteFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
+}
+
+/* Continuous 5-Second Fade In / Fade Out Loop */
+@keyframes continuousFadeInOut {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.animate-continuous-fade-5s {
+  animation: continuousFadeInOut 5s ease-in-out infinite;
+}
+
+/* Seamless Infinite Marquee Rows & Columns */
+@keyframes marqueeLeft {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marqueeRight {
+  0% {
+    transform: translateX(-50%);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Vertical marquee animations */
+@keyframes marqueeDown {
+  0% {
+    transform: translateY(-50%);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes marqueeUp {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee-left {
+  animation: marqueeLeft 36s linear infinite;
+}
+
+.animate-marquee-right {
+  animation: marqueeRight 36s linear infinite;
+}
+
+.animate-marquee-down {
+  animation: marqueeDown 40s linear infinite;
+}
+
+.animate-marquee-up {
+  animation: marqueeUp 40s linear infinite;
+}
+
+/* Pause the hovered column specifically or the container */
+.vertical-marquee-col:hover .animate-marquee-down,
+.vertical-marquee-col:hover .animate-marquee-up,
+.marquee-container:hover .animate-marquee-left,
+.marquee-container:hover .animate-marquee-right {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .animate-marquee-left,
+  .animate-marquee-right,
+  .animate-marquee-down,
+  .animate-marquee-up {
+    animation: none !important;
+  }
+}
+
+/* Cosmic Project Button - Black button with white text and rotating rocket icon */
+.cosmic-project-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 17px;
+  padding: 0.8em 1.3em 0.8em 0.9em;
+
+  /* BLACK BUTTON */
+  color: #ffffff;
+  background: #000000;
+
+  border: none;
+  letter-spacing: 0.05em;
+  border-radius: 16px;
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.3s ease,
+    background 0.3s ease;
+}
+
+.cosmic-project-btn svg {
+  margin-right: 3px;
+  color: #ffffff;
+  transform: rotate(30deg);
+  transition:
+    transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.cosmic-project-btn span {
+  color: #ffffff;
+  transition:
+    transform 0.5s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.cosmic-project-btn:hover {
+  background: #111111;
+  box-shadow: 0 7px 22px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.cosmic-project-btn:hover svg {
+  transform: translateX(5px) rotate(90deg);
+}
+
+.cosmic-project-btn:hover span {
+  transform: translateX(7px);
+}
+
+.cosmic-project-btn:active {
+  transform: translateY(0);
+}
