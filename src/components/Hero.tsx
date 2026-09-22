@@ -431,7 +431,10 @@ export const Hero: React.FC<HeroProps> = ({
           </div>
 
           {/* Centered Single Action Button: Start a Project (in the middle, explore work removed) */}
-          <div className="flex items-center justify-center mt-3.5">
+          <div
+            className="flex items-center justify-center"
+            style={{ marginTop: 'calc(0.875rem + 3cm)' }}
+          >
             <button
               onClick={onStartProject}
               id="hero-start-project-btn"

@@ -266,19 +266,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           </form>
         ) : (
           /* Submission Success View */
-          <div className="py-8 text-center animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 bg-[#c8f179]/30 border-2 border-[#476800] rounded-full flex items-center justify-center mx-auto mb-6 text-[#141f00]">
-              <CheckCircle2 className="w-8 h-8 text-[#476800]" />
+          <div className="py-8 text-center animate-in fade-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-[#f4fbe9] border border-[#c8f179] rounded-full flex items-center justify-center mx-auto mb-6 shadow-[0_0_24px_rgba(200,241,121,0.35)]">
+              <Check className="w-8 h-8 text-[#476800] stroke-[2.5]" />
             </div>
 
-            <span className="font-mono-tech text-xs text-[#476800] uppercase font-bold tracking-wider">
-              BRIEF TRANSMITTED TO ENGINEERING QUEUE
-            </span>
-            <h3 className="font-display-tech text-3xl font-bold text-[#000000] mt-2 mb-3">
-              Project Initialized
+            <h3 className="font-display-tech text-3xl font-extrabold text-[#000000] tracking-tight mb-3">
+              WE RECEIVED YOUR REQUEST
             </h3>
-            <p className="font-display-tech text-sm text-[#444748] max-w-md mx-auto mb-6">
-              Thank you, <strong className="text-black">{formData.name}</strong>. Our hardware and systems architecture team has logged your requirements.
+            <p className="font-display-tech text-base text-[#444748] max-w-md mx-auto mb-6 leading-relaxed">
+              Our team will review your project requirements and contact you soon.
             </p>
 
             <div className="bg-[#f3f4f1] border border-[#c4c7c7] rounded-lg p-4 max-w-md mx-auto mb-8 text-left font-mono-tech text-xs space-y-1.5">

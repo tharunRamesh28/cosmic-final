@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, CheckCircle2, ShieldCheck, Upload, Send, HelpCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldCheck, Upload, Send, AlertCircle, Check } from 'lucide-react';
 import { Link, useRouter } from '../router';
+import { supabase } from '../lib/supabase';
+
+const ALLOWED_EXTENSIONS = ['.pdf', '.step', '.stp', '.zip', '.gbr', '.gerber', '.dwg', '.png'];
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
 export const OrderPage: React.FC = () => {
   const { locationState } = useRouter();
@@ -11,62 +15,224 @@ export const OrderPage: React.FC = () => {
   const [phone, setPhone] = useState<string>('');
   const [company, setCompany] = useState<string>('');
   const [projectName, setProjectName] = useState<string>('');
-  const [projectType, setProjectType] = useState<string>('Electronics');
+  const [projectType, setProjectType] = useState<string>('Embedded Systems');
   const [projectDescription, setProjectDescription] = useState<string>('');
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-  const [budgetRange, setBudgetRange] = useState<string>('$5,000 - $15,000');
-  const [expectedTimeline, setExpectedTimeline] = useState<string>('4 - 8 Weeks');
-  const [fileName, setFileName] = useState<string>('');
+  const [expectedTimeline, setExpectedTimeline] = useState<string>('STANDARD (10–14 Days)');
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [submitting, setSubmitting] = useState<boolean>(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<boolean>(false);
+
+  // Store confirmed details to display cleanly on the success screen
+  const [confirmedSummary, setConfirmedSummary] = useState<{
+    name: string;
+    email: string;
+    projectName: string;
+    projectType: string;
+    expectedTimeline: string;
+  }>({
+    name: '',
+    email: '',
+    projectName: '',
+    projectType: '',
+    expectedTimeline: '',
+  });
 
   useEffect(() => {
     if (locationState?.initialService) {
       setProjectName(locationState.initialService);
     }
+    if (locationState?.selectedSpeed) {
+      const speed = locationState.selectedSpeed.toUpperCase();
+      if (speed.includes('RAPID')) {
+        setExpectedTimeline('RAPID (7–10 Days)');
+      } else if (speed.includes('EXTENDED')) {
+        setExpectedTimeline('EXTENDED (14–20 Days)');
+      } else {
+        setExpectedTimeline('STANDARD (10–14 Days)');
+      }
+    }
   }, [locationState]);
 
   const projectTypes = [
-    'Electronics',
     'Embedded Systems',
     'IoT',
-    'PCB',
     'CAD Design',
     'Robotics',
-    'AI + Hardware',
     'Complete Product',
     'Other'
   ];
 
-  const availableServices = [
-    'Circuit Design',
-    'Schematic Capture',
-    'PCB Layout & DFM',
-    'Embedded Firmware (C/C++/Rust)',
-    'IoT Cloud Telemetry',
-    '3D Mechanical CAD',
-    'Physical Prototyping',
-    'Edge AI / Computer Vision',
-    'Complete Product Turnkey'
-  ];
-
-  const handleServiceToggle = (service: string) => {
-    if (selectedServices.includes(service)) {
-      setSelectedServices(selectedServices.filter((s) => s !== service));
-    } else {
-      setSelectedServices([...selectedServices, service]);
-    }
-  };
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFileName(e.target.files[0].name);
+    setFormError(null);
+    if (e.target.files && e.target.files.length > 0) {
+      const filesArray: File[] = Array.from(e.target.files);
+
+      for (const file of filesArray) {
+        if (file.size > MAX_FILE_SIZE) {
+          setFormError(`File "${file.name}" exceeds the 50MB size limit.`);
+          return;
+        }
+        const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+        if (!ALLOWED_EXTENSIONS.includes(ext)) {
+          setFormError(`File "${file.name}" has an unsupported format. Allowed: .pdf, .step, .zip, .gbr, .dwg, .png`);
+          return;
+        }
+      }
+
+      setSelectedFiles(filesArray);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setFormError(null);
+
+    // STEP 1: Validation of required fields
+    if (!name.trim()) {
+      setFormError('Please provide your name.');
+      return;
+    }
+    if (!email.trim()) {
+      setFormError('Please provide your email address.');
+      return;
+    }
+    if (!projectName.trim()) {
+      setFormError('Please enter a project name.');
+      return;
+    }
+    if (!projectType) {
+      setFormError('Please select a project type.');
+      return;
+    }
+    if (!projectDescription.trim()) {
+      setFormError('Please describe your project requirements.');
+      return;
+    }
+
+    // STEP 2: Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setFormError('Please enter a valid email address format.');
+      return;
+    }
+
+    // STEP 3: File validation
+    for (const file of selectedFiles) {
+      if (file.size > MAX_FILE_SIZE) {
+        setFormError(`File "${file.name}" exceeds the 50MB maximum size limit.`);
+        return;
+      }
+      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_EXTENSIONS.includes(ext)) {
+        setFormError(`File "${file.name}" is not an allowed format (.pdf, .step, .zip, .gbr, .dwg, .png).`);
+        return;
+      }
+    }
+
+    setSubmitting(true);
+
+    try {
+      // DIAGNOSTIC STEP 2: Inspect Google authentication and session immediately before submission
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
+
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      console.log('Supabase session:', session ? 'Active' : null);
+      console.log('Supabase user:', user ? { id: user.id, email: user.email } : null);
+      console.log('Supabase user ID:', user?.id);
+      if (sessionError) console.log('Session error:', sessionError);
+      if (userError) console.log('User error:', userError);
+
+      // STEP 3: If user is null, STOP submission and prompt user
+      if (!user) {
+        setFormError('Please continue with Google before submitting your project.');
+        setSubmitting(false);
+        return;
+      }
+
+      // STEP 4: Insert into public.project_submissions with authenticated user_id
+      // Testing INSERT alone without .select() to verify insert permissions
+      const submissionRecord = {
+        user_id: user.id,
+        client_name: name.trim(),
+        email: email.trim().toLowerCase(),
+        phone: phone.trim() || null,
+        company: company.trim() || null,
+        project_name: projectName.trim(),
+        project_type: projectType,
+        project_description: projectDescription.trim(),
+        expected_timeline: expectedTimeline || null,
+        status: 'new' as const,
+      };
+
+      const { error: submissionError } = await supabase
+        .from('project_submissions')
+        .insert(submissionRecord);
+
+      if (submissionError) {
+        console.error('PROJECT INSERT ERROR:', submissionError);
+        setFormError(
+          submissionError.message ||
+            'Unable to transmit project brief at this time. Please verify your details and try again.'
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      console.log('Project submitted successfully');
+
+      // STEP 6: Upload selected files if any were provided
+      if (selectedFiles.length > 0) {
+        for (const file of selectedFiles) {
+          const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          const storagePath = `${user.id}/${Date.now()}_${sanitizedFileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from('project-files')
+            .upload(storagePath, file, {
+              cacheControl: '3600',
+              upsert: false,
+            });
+
+          if (uploadError) {
+            console.error('Storage upload error:', uploadError);
+          }
+        }
+      }
+
+      // Preserve details for success screen
+      setConfirmedSummary({
+        name: name.trim(),
+        email: email.trim(),
+        projectName: projectName.trim(),
+        projectType,
+        expectedTimeline,
+      });
+
+      // Clear the form only after successful submission
+      setName('');
+      setEmail('');
+      setPhone('');
+      setCompany('');
+      setProjectName('');
+      setProjectDescription('');
+      setSelectedFiles([]);
+
+      // STEP 8: Show the existing website's professional success state
+      setSubmitted(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      setFormError('Network communication error. Please check your internet connection and try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -92,29 +258,43 @@ export const OrderPage: React.FC = () => {
       </div>
 
       {submitted ? (
-        /* Confirmation State */
-        <div className="bg-white border border-[#c4c7c7]/60 rounded-2xl p-8 md:p-16 max-w-2xl mx-auto text-center shadow-lg">
-          <div className="w-16 h-16 rounded-full bg-[#c8f179]/30 border-2 border-[#476800] text-[#191c1b] flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8 text-[#476800]" />
+        /* Professional Success Confirmation */
+        <div className="bg-white border border-[#c4c7c7]/60 rounded-2xl p-10 md:p-16 max-w-2xl mx-auto text-center shadow-lg animate-in fade-in zoom-in-95 duration-300">
+          {/* Subtle Cosmic Circuit green success indicator / icon */}
+          <div className="w-16 h-16 rounded-full bg-[#f4fbe9] border border-[#c8f179] flex items-center justify-center mx-auto mb-6 shadow-[0_0_24px_rgba(200,241,121,0.35)]">
+            <Check className="w-8 h-8 text-[#476800] stroke-[2.5]" />
           </div>
-          <h2 className="font-display-tech text-3xl font-bold text-[#000000] mb-4">
-            Project Proposal Transmitted
+
+          <h2 className="font-display-tech text-3xl sm:text-4xl font-extrabold text-[#000000] tracking-tight mb-3">
+            WE RECEIVED YOUR REQUEST
           </h2>
-          <p className="font-display-tech text-base text-[#444748] mb-8 leading-relaxed">
-            Thank you, <span className="font-bold text-black">{name || 'Client'}</span>. Our engineering team has received your project brief. A technical lead will review your specifications and contact you at <span className="font-bold text-black">{email}</span> within 24 hours.
+
+          <p className="font-display-tech text-base sm:text-lg text-[#444748] max-w-lg mx-auto mb-8 leading-relaxed">
+            Our team will review your project requirements and contact you soon.
           </p>
 
-          <div className="bg-[#f9faf7] border border-[#c4c7c7]/60 rounded-xl p-6 mb-8 text-left font-mono-tech text-xs space-y-2.5">
-            <div><span className="text-neutral-400">PROJECT:</span> {projectName || 'Hardware Build'}</div>
-            <div><span className="text-neutral-400">TYPE:</span> {projectType}</div>
-            <div><span className="text-neutral-400">SERVICES:</span> {selectedServices.length > 0 ? selectedServices.join(', ') : 'Turnkey Development'}</div>
-            <div><span className="text-neutral-400">TIMELINE:</span> {expectedTimeline}</div>
-            <div><span className="text-neutral-400">BUDGET:</span> {budgetRange}</div>
+          <div className="bg-[#f9faf7] border border-[#c4c7c7]/60 rounded-xl p-5 mb-8 text-left font-mono-tech text-xs space-y-2 max-w-md mx-auto">
+            <div className="flex justify-between">
+              <span className="text-neutral-400">PROJECT:</span>
+              <span className="font-bold text-black">{confirmedSummary.projectName || 'Hardware Build'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">DISCIPLINE:</span>
+              <span className="font-bold text-black">{confirmedSummary.projectType}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">CLIENT:</span>
+              <span className="font-bold text-black">{confirmedSummary.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-400">CONTACT:</span>
+              <span className="font-bold text-black">{confirmedSummary.email}</span>
+            </div>
           </div>
 
           <Link
             to="/"
-            className="inline-flex items-center gap-2 bg-[#000000] text-white font-mono-tech text-xs font-bold px-8 py-4 rounded-lg hover:bg-[#2e312f] transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 bg-[#000000] text-white font-mono-tech text-xs font-bold px-8 py-3.5 rounded-lg hover:bg-[#2e312f] transition-all cursor-pointer shadow-xs"
           >
             <span>RETURN HOME</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -244,97 +424,82 @@ export const OrderPage: React.FC = () => {
                     className="w-full bg-[#f9faf7] border border-[#c4c7c7] rounded-lg p-3.5 text-sm font-display-tech text-black focus:outline-none focus:border-black transition-colors"
                   />
                 </div>
-
-                {/* Required Services Multi-Select */}
-                <div>
-                  <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block mb-2">
-                    Required Services (Select All That Apply)
-                  </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-                    {availableServices.map((service) => {
-                      const isSelected = selectedServices.includes(service);
-                      return (
-                        <button
-                          type="button"
-                          key={service}
-                          onClick={() => handleServiceToggle(service)}
-                          className={`p-3 rounded-lg border text-left font-mono-tech text-xs transition-all flex items-center justify-between cursor-pointer ${
-                            isSelected
-                              ? 'border-2 border-black bg-[#f4fbe9] text-[#191c1b] font-bold'
-                              : 'border-[#c4c7c7]/60 bg-white text-[#444748] hover:border-black'
-                          }`}
-                        >
-                          <span>{service}</span>
-                          {isSelected && <CheckCircle2 className="w-3.5 h-3.5 text-[#476800]" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
             </div>
 
             {/* Scope & Logistics */}
             <div className="pt-6 border-t border-[#c4c7c7]/30">
               <span className="font-mono-tech text-xs text-[#74a81e] font-bold uppercase tracking-wider block mb-4">
-                # 03 TIMELINE, BUDGET & FILES
+                # 03 TIMELINE & FILES
               </span>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block mb-2">
-                    Budget Range
-                  </label>
-                  <select
-                    value={budgetRange}
-                    onChange={(e) => setBudgetRange(e.target.value)}
-                    className="w-full bg-[#f9faf7] border border-[#c4c7c7] rounded-lg p-3.5 text-sm font-display-tech text-black focus:outline-none focus:border-black"
-                  >
-                    <option value="<$5,000">&lt; $5,000 (Feasibility / Proof of Concept)</option>
-                    <option value="$5,000 - $15,000">$5,000 - $15,000 (Functional Hardware Prototype)</option>
-                    <option value="$15,000 - $35,000">$15,000 - $35,000 (Production-Ready Rev-A System)</option>
-                    <option value="$35,000+">$35,000+ (Full Turnkey Hardware, Firmware & CAD)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block mb-2">
-                    Expected Timeline
-                  </label>
-                  <select
-                    value={expectedTimeline}
-                    onChange={(e) => setExpectedTimeline(e.target.value)}
-                    className="w-full bg-[#f9faf7] border border-[#c4c7c7] rounded-lg p-3.5 text-sm font-display-tech text-black focus:outline-none focus:border-black"
-                  >
-                    <option value="Express (1–2 Weeks)">Express Delivery (1–2 Weeks)</option>
-                    <option value="Priority (3–4 Weeks)">Priority (3–4 Weeks)</option>
-                    <option value="Standard (4–8 Weeks)">Standard Development (4–8 Weeks)</option>
-                    <option value="Flexible (8+ Weeks)">Flexible / Ongoing Engineering</option>
-                  </select>
-                </div>
+              <div className="mb-6">
+                <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block mb-2">
+                  Development Package &amp; Expected Timeline
+                </label>
+                <select
+                  value={expectedTimeline}
+                  onChange={(e) => setExpectedTimeline(e.target.value)}
+                  className="w-full bg-[#f9faf7] border border-[#c4c7c7] rounded-lg p-3.5 text-sm font-display-tech text-black focus:outline-none focus:border-black font-semibold"
+                >
+                  <option value="RAPID (7–10 Days)">RAPID — 7–10 Days (Quick turnaround)</option>
+                  <option value="STANDARD (10–14 Days)">STANDARD — 10–14 Days (Balanced &amp; recommended)</option>
+                  <option value="EXTENDED (14–20 Days)">EXTENDED — 14–20 Days (Additional testing &amp; refinement)</option>
+                  <option value="Custom Scope / Ongoing">Custom Scope / Ongoing Engineering</option>
+                </select>
               </div>
 
               {/* Upload Project Files */}
               <div>
-                <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block mb-2">
-                  Upload Project Files (Schematics, Spec Sheets, CAD, Reference Docs)
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="font-mono-tech text-xs text-neutral-500 uppercase font-bold block">
+                    Upload Project Files (Optional)
+                  </label>
+                  <span className="font-mono-tech text-[10px] text-[#476800] uppercase font-bold">
+                    Schematics, Spec Sheets, CAD, Reference Docs
+                  </span>
+                </div>
                 <div className="relative border-2 border-dashed border-[#c4c7c7] rounded-xl p-6 text-center hover:border-black transition-colors bg-[#f9faf7]">
                   <input
                     type="file"
+                    multiple
                     onChange={handleFileChange}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   />
                   <Upload className="w-6 h-6 text-[#476800] mx-auto mb-2" />
                   <p className="font-display-tech text-xs text-[#191c1b] font-semibold">
-                    {fileName ? `Selected file: ${fileName}` : 'Drag & drop project files, or browse from computer'}
+                    {selectedFiles.length > 0
+                      ? selectedFiles.length === 1
+                        ? `Selected file: ${selectedFiles[0].name}`
+                        : `${selectedFiles.length} files selected: ${selectedFiles.map((f) => f.name).join(', ')}`
+                      : 'Drag & drop project files, or browse from computer (Optional)'}
                   </p>
                   <p className="font-mono-tech text-[10px] text-neutral-400 mt-1">
-                    Supports PDF, STEP, ZIP, Gerber, DWG, PNG (Max 50MB)
+                    Supports PDF, STEP, ZIP, Gerber, DWG, PNG (Max 50MB per file)
                   </p>
+                  {selectedFiles.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFiles([]);
+                      }}
+                      className="mt-3 inline-flex items-center gap-1 text-[11px] font-mono-tech text-neutral-500 hover:text-black underline relative z-10 cursor-pointer"
+                    >
+                      Clear selected files
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
+
+            {/* Error Feedback */}
+            {formError && (
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-mono-tech flex items-start gap-2.5">
+                <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                <span>{formError}</span>
+              </div>
+            )}
 
             {/* Submission CTA */}
             <div className="pt-6 border-t border-[#c4c7c7]/30 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -345,10 +510,20 @@ export const OrderPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full sm:w-auto bg-[#000000] text-white font-mono-tech text-xs font-bold px-10 py-4 rounded-lg hover:bg-[#2e312f] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                disabled={submitting}
+                className="w-full sm:w-auto bg-[#000000] text-white font-mono-tech text-xs font-bold px-10 py-4 rounded-lg hover:bg-[#2e312f] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <span>SUBMIT PROJECT</span>
-                <Send className="w-4 h-4" />
+                {submitting ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>SUBMITTING PROJECT...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>SUBMIT PROJECT</span>
+                    <Send className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </div>
           </form>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon } from 'lucide-react';
 import { useRouter } from '../router';
+import { useAuth } from '../lib/AuthContext';
 
 interface HeaderProps {
   onStartProject?: () => void;
@@ -15,8 +16,15 @@ export const Header: React.FC<HeaderProps> = ({
   activeSection,
 }) => {
   const { path, navigate } = useRouter();
+  const { user, isAdmin, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  const handleSignOut = async () => {
+    handleClose();
+    await signOut();
+    navigate('/login');
+  };
 
   // Lock body scroll when navigation menu is open
   useEffect(() => {
@@ -58,6 +66,7 @@ export const Header: React.FC<HeaderProps> = ({
     { num: '02', label: 'WORKS', href: '/works' },
     { num: '03', label: 'SERVICES', href: '/services' },
     { num: '04', label: 'ABOUT', href: '/about' },
+    ...(isAdmin ? [{ num: '05', label: 'ADMIN', href: '/admin' }] : []),
   ];
 
   const handleItemClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
@@ -92,8 +101,57 @@ export const Header: React.FC<HeaderProps> = ({
             <span>Cosmic Circuit</span>
           </a>
 
-          {/* Top-Right Area: Hamburger menu button ONLY */}
-          <div className="flex items-center">
+          {/* Top-Right Area: User actions and menu button */}
+          <div className="flex items-center gap-2.5">
+            {user ? (
+              <div className="flex items-center gap-2">
+                {user.user_metadata?.avatar_url ? (
+                  <img
+                    src={user.user_metadata.avatar_url}
+                    alt={user.user_metadata.full_name || user.email || 'User'}
+                    className="w-8 h-8 rounded-lg object-cover border border-[#c8f179]/60 shadow-xs"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div
+                    className={`w-8 h-8 rounded-lg border flex items-center justify-center font-mono-tech text-xs font-bold ${
+                      isCircuitShaderActive
+                        ? 'border-neutral-800 bg-neutral-900 text-[#c8f179]'
+                        : 'border-[#c4c7c7] bg-white text-[#476800]'
+                    }`}
+                    title={user.email || 'Authenticated User'}
+                  >
+                    {(user.email?.[0] || 'U').toUpperCase()}
+                  </div>
+                )}
+                <button
+                  onClick={handleSignOut}
+                  title={`Sign out (${user.email || 'User'})`}
+                  className={`p-2 rounded-lg border transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer ${
+                    isCircuitShaderActive
+                      ? 'border-neutral-800 bg-neutral-900/80 text-neutral-400 hover:text-white hover:border-neutral-600'
+                      : 'border-[#c4c7c7]/60 bg-white/80 text-[#444748] hover:text-black hover:border-black'
+                  }`}
+                  aria-label="Sign out"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => navigate('/login')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono-tech text-xs font-bold transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer ${
+                  isCircuitShaderActive
+                    ? 'border-neutral-700 bg-neutral-900/80 text-neutral-200 hover:border-[#c8f179] hover:text-[#c8f179]'
+                    : 'border-[#c4c7c7]/70 bg-white/90 text-[#191c1b] hover:border-black hover:text-black'
+                }`}
+                title="Sign in with Google"
+              >
+                <UserIcon className="w-3.5 h-3.5 text-[#476800]" />
+                <span className="hidden sm:inline">LOGIN</span>
+              </button>
+            )}
+
             <button
               onClick={handleOpen}
               className={`p-2.5 rounded-lg border transition-all duration-200 shadow-xs hover:-translate-y-0.5 hover:shadow-sm ${isCircuitShaderActive
@@ -179,17 +237,55 @@ export const Header: React.FC<HeaderProps> = ({
               })}
             </nav>
 
-            {/* Bottom: Brand Statement Quote */}
-            <div className="pt-8 border-t border-[#c4c7c7]/30 animate-quote-in">
-              <blockquote className="font-display-tech text-base sm:text-lg md:text-xl text-[#444748] font-normal leading-relaxed max-w-2xl">
-                <span className="text-[#74a81e] font-serif text-2xl md:text-3xl leading-none select-none mr-1">“</span>
-                We turn ideas into intelligent, engineered products that make an impact.
-                <span className="text-[#74a81e] font-serif text-2xl md:text-3xl leading-none select-none ml-1">”</span>
-              </blockquote>
-              <p className="font-mono-tech text-xs sm:text-sm font-semibold text-[#191c1b] mt-3 flex items-center gap-2">
-                <span className="w-3.5 h-[2px] bg-[#c8f179]"></span>
-                <span>— Cosmic Circuit</span>
-              </p>
+            {/* Bottom: Brand Statement Quote & Sign Out */}
+            <div className="pt-8 border-t border-[#c4c7c7]/30 flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-quote-in">
+              <div>
+                <blockquote className="font-display-tech text-base sm:text-lg md:text-xl text-[#444748] font-normal leading-relaxed max-w-2xl">
+                  <span className="text-[#74a81e] font-serif text-2xl md:text-3xl leading-none select-none mr-1">“</span>
+                  We turn ideas into intelligent, engineered products that make an impact.
+                  <span className="text-[#74a81e] font-serif text-2xl md:text-3xl leading-none select-none ml-1">”</span>
+                </blockquote>
+                <p className="font-mono-tech text-xs sm:text-sm font-semibold text-[#191c1b] mt-3 flex items-center gap-2">
+                  <span className="w-3.5 h-[2px] bg-[#c8f179]"></span>
+                  <span>— Cosmic Circuit</span>
+                </p>
+              </div>
+
+              {user ? (
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    {user.user_metadata?.avatar_url && (
+                      <img
+                        src={user.user_metadata.avatar_url}
+                        alt="User"
+                        className="w-7 h-7 rounded-md object-cover border border-[#c8f179]/60"
+                        referrerPolicy="no-referrer"
+                      />
+                    )}
+                    <span className="font-mono-tech text-xs text-neutral-600 hidden sm:inline">
+                      {user.email}
+                    </span>
+                  </div>
+                  <button
+                    onClick={handleSignOut}
+                    className="inline-flex items-center gap-2 font-mono-tech text-xs font-bold text-neutral-600 hover:text-black py-2 px-3.5 rounded-lg border border-[#c4c7c7]/70 bg-white hover:border-black transition-colors cursor-pointer shrink-0"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>SIGN OUT</span>
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => {
+                    handleClose();
+                    navigate('/login');
+                  }}
+                  className="inline-flex items-center gap-2 font-mono-tech text-xs font-bold text-black py-2 px-3.5 rounded-lg border border-black bg-[#c8f179] hover:bg-[#b9e86a] transition-colors cursor-pointer shrink-0"
+                >
+                  <UserIcon className="w-3.5 h-3.5" />
+                  <span>SIGN IN</span>
+                </button>
+              )}
             </div>
           </div>
         </div>

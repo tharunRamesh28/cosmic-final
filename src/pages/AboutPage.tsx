@@ -8,8 +8,6 @@ export const AboutPage: React.FC = () => {
     'Electronics',
     'Embedded Systems',
     'IoT',
-    'AI + Hardware',
-    'PCB Design',
     'CAD Design',
     'Robotics',
     'Product Prototyping'
@@ -93,7 +91,7 @@ export const AboutPage: React.FC = () => {
           <span className="font-mono-tech text-xs text-[#74a81e] font-bold uppercase tracking-wider block mb-6">
             # OUR EXPERTISE
           </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {expertiseList.map((item) => (
               <div
                 key={item}
