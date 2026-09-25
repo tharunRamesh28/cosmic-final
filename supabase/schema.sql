@@ -47,6 +47,27 @@ with check (
   )
 );
 
+-- Users can view their own submitted project briefs
+create policy "Users can view their own project submissions"
+on public.project_submissions
+for select
+to authenticated
+using (
+  auth.uid() = user_id
+);
+
+-- Users can update what they have submitted in their project brief
+create policy "Users can update their own project submissions"
+on public.project_submissions
+for update
+to authenticated
+using (
+  auth.uid() = user_id
+)
+with check (
+  auth.uid() = user_id
+);
+
 -- --------------------------------------------------------------------
 -- 3. PROJECT FILES METADATA TABLE & POLICIES
 -- Tracks file records associated with project submissions
@@ -79,6 +100,18 @@ using (
   exists (
     select 1 from public.admin_users
     where admin_users.user_id = auth.uid()
+  )
+);
+
+create policy "Users can view their own project file metadata"
+on public.project_files
+for select
+to authenticated
+using (
+  exists (
+    select 1 from public.project_submissions
+    where project_submissions.id = project_files.submission_id
+    and project_submissions.user_id = auth.uid()
   )
 );
 

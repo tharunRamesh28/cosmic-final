@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, LogOut, User as UserIcon } from 'lucide-react';
+import { Menu, X, LogOut, User as UserIcon, ClipboardList } from 'lucide-react';
 import { useRouter } from '../router';
 import { useAuth } from '../lib/AuthContext';
 
@@ -66,7 +66,8 @@ export const Header: React.FC<HeaderProps> = ({
     { num: '02', label: 'WORKS', href: '/works' },
     { num: '03', label: 'SERVICES', href: '/services' },
     { num: '04', label: 'ABOUT', href: '/about' },
-    ...(isAdmin ? [{ num: '05', label: 'ADMIN', href: '/admin' }] : []),
+    ...(user ? [{ num: '05', label: 'MY REQUESTS', href: '/my-requests' }] : []),
+    ...(isAdmin ? [{ num: user ? '06' : '05', label: 'ADMIN', href: '/admin' }] : []),
   ];
 
   const handleItemClick = (e: React.MouseEvent, item: typeof navItems[0]) => {
@@ -105,25 +106,46 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-2.5">
             {user ? (
               <div className="flex items-center gap-2">
-                {user.user_metadata?.avatar_url ? (
-                  <img
-                    src={user.user_metadata.avatar_url}
-                    alt={user.user_metadata.full_name || user.email || 'User'}
-                    className="w-8 h-8 rounded-lg object-cover border border-[#c8f179]/60 shadow-xs"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div
-                    className={`w-8 h-8 rounded-lg border flex items-center justify-center font-mono-tech text-xs font-bold ${
-                      isCircuitShaderActive
-                        ? 'border-neutral-800 bg-neutral-900 text-[#c8f179]'
-                        : 'border-[#c4c7c7] bg-white text-[#476800]'
-                    }`}
-                    title={user.email || 'Authenticated User'}
-                  >
-                    {(user.email?.[0] || 'U').toUpperCase()}
-                  </div>
-                )}
+                <button
+                  onClick={() => navigate('/my-requests')}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono-tech text-xs font-bold transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer ${
+                    path === '/my-requests'
+                      ? 'bg-black text-[#c8f179] border-black shadow-[0_0_10px_rgba(200,241,121,0.25)]'
+                      : isCircuitShaderActive
+                      ? 'border-neutral-700 bg-neutral-900/80 text-neutral-200 hover:border-[#c8f179] hover:text-[#c8f179]'
+                      : 'border-[#c4c7c7]/80 bg-white/95 text-[#191c1b] hover:border-black hover:text-black'
+                  }`}
+                  title="View your submitted project requests and progress"
+                >
+                  <ClipboardList className="w-3.5 h-3.5 text-[#476800]" />
+                  <span className="hidden sm:inline">MY REQUESTS</span>
+                </button>
+
+                <button
+                  onClick={() => navigate('/my-requests')}
+                  className="cursor-pointer focus:outline-none"
+                  title={`Signed in as ${user.email || 'User'} - click to view My Requests`}
+                >
+                  {user.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt={user.user_metadata.full_name || user.email || 'User'}
+                      className="w-8 h-8 rounded-lg object-cover border border-[#c8f179]/60 shadow-xs"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div
+                      className={`w-8 h-8 rounded-lg border flex items-center justify-center font-mono-tech text-xs font-bold ${
+                        isCircuitShaderActive
+                          ? 'border-neutral-800 bg-neutral-900 text-[#c8f179]'
+                          : 'border-[#c4c7c7] bg-white text-[#476800]'
+                      }`}
+                    >
+                      {(user.email?.[0] || 'U').toUpperCase()}
+                    </div>
+                  )}
+                </button>
+
                 <button
                   onClick={handleSignOut}
                   title={`Sign out (${user.email || 'User'})`}

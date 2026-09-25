@@ -21,6 +21,7 @@ import { SignupPage } from './pages/SignupPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { AdminDashboardPage } from './pages/AdminDashboardPage';
 import { AuthCallbackPage } from './pages/AuthCallbackPage';
+import { MyRequestsPage } from './pages/MyRequestsPage';
 import ClickSpark from './components/ClickSpark';
 
 function AppContent() {
@@ -130,6 +131,9 @@ function AppContent() {
 
             {/* Route: /order or /start-a-project */}
             {(path === '/order' || path === '/start-a-project') && <OrderPage />}
+
+            {/* Route: /my-requests */}
+            {path === '/my-requests' && <MyRequestsPage />}
 
             {/* Default Route: Exact Full Original Home Page */}
             {isHome && (
