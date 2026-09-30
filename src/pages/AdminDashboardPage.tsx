@@ -21,7 +21,6 @@ import {
   AlertCircle,
   LayoutDashboard,
   FolderKanban,
-  MessageSquare,
   Settings as SettingsIcon,
   Menu
 } from 'lucide-react';
@@ -36,6 +35,7 @@ const STATUS_LABELS: Record<string, string> = {
   reviewing: 'REVIEWING',
   contacted: 'CONTACTED',
   rejected: 'REJECTED',
+  accepted: 'ACCEPTED',
 };
 
 const STATUS_BADGE_CLASSES: Record<string, string> = {
@@ -44,7 +44,8 @@ const STATUS_BADGE_CLASSES: Record<string, string> = {
   completed: 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold',
   reviewing: 'bg-amber-50 text-amber-800 border border-amber-200',
   contacted: 'bg-sky-50 text-sky-800 border border-sky-200',
-  rejected: 'bg-neutral-100 text-neutral-500 border border-neutral-300',
+  rejected: 'bg-rose-50 text-rose-600 border border-rose-300 font-bold',
+  accepted: 'bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold',
 };
 
 function formatFileSize(bytes: number | null): string {
@@ -55,7 +56,8 @@ function formatFileSize(bytes: number | null): string {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 }
 
-export const AdminDashboardPage: React.FC = () => {
+
+        export const AdminDashboardPage: React.FC = () => {
   const { navigate } = useRouter();
   const { loading: authLoading, isAdmin, adminUser, signOut } = useAdminAuth(true);
 
@@ -80,6 +82,14 @@ export const AdminDashboardPage: React.FC = () => {
   const [updatingStatus, setUpdatingStatus] = useState<boolean>(false);
   const [editStatus, setEditStatus] = useState<string>('new');
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+
+  // New Modals State
+  const [projectToAccept, setProjectToAccept] = useState<ProjectSubmission | null>(null);
+  const [projectToReject, setProjectToReject] = useState<ProjectSubmission | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<ProjectSubmission | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string>('');
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
+
 
   // Fetch Submissions from Supabase
   const fetchSubmissions = useCallback(async () => {
@@ -161,6 +171,86 @@ export const AdminDashboardPage: React.FC = () => {
     setProjectFiles([]);
     setActionMessage(null);
   };
+
+  // Action Handlers
+  const handleAcceptProject = async () => {
+    if (!projectToAccept) return;
+    setActionLoading(true);
+    try {
+      const { error } = await supabase
+        .from('project_submissions')
+        .update({ status: 'accepted' })
+        .eq('id', projectToAccept.id);
+      if (!error) {
+        setSubmissions(prev => prev.map(p => p.id === projectToAccept.id ? { ...p, status: 'accepted' as any } : p));
+        setProjectToAccept(null);
+      } else {
+        alert('Failed to accept project: ' + error.message);
+      }
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRejectProject = async () => {
+    if (!projectToReject) return;
+    setActionLoading(true);
+    try {
+      const { error } = await supabase
+        .from('project_submissions')
+        .update({ status: 'rejected' })
+        .eq('id', projectToReject.id);
+      if (!error) {
+        setSubmissions(prev => prev.map(p => p.id === projectToReject.id ? { ...p, status: 'rejected' as any } : p));
+        setProjectToReject(null);
+        setRejectionReason('');
+      } else {
+        alert('Failed to reject project: ' + error.message);
+      }
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+    const handleDeleteProject = async () => {
+    if (!projectToDelete) return;
+    
+    // CRITICAL DEBUG TEST
+    console.log("PROJECT ID:\n" + projectToDelete.id);
+    console.log("PROJECT NAME:\n" + projectToDelete.project_name);
+    console.log("PROJECT STATUS:\n" + projectToDelete.status);
+
+    setActionLoading(true);
+    try {
+      // Step 3 & 4: Call Secure RPC for deletion
+      const { data, error } = await supabase.rpc('admin_delete_rejected_project', {
+        p_project_id: projectToDelete.id
+      });
+      
+      if (error) {
+        console.error('Supabase RPC Error:', error);
+        alert('Unable to permanently delete the project.\n' + error.message);
+      } else {
+        // Evaluate RPC response
+        if (data.success === true) {
+          // Step 6 & 7: Verify deletion by refetching from the real database
+          await fetchSubmissions();
+          setProjectToDelete(null);
+          alert(data.message || 'Project deleted successfully.');
+        } else {
+          // It failed safely on the backend for a specific reason
+          console.warn('Backend rejected deletion:', data.error, data.message);
+          alert(data.message || 'Unable to permanently delete the project.');
+        }
+      }
+    } catch (err: any) {
+      console.error('Unexpected Delete Error:', err);
+      alert('An unexpected error occurred during deletion.');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
 
   // Status Updater
   const handleStatusChange = async () => {
@@ -313,7 +403,7 @@ export const AdminDashboardPage: React.FC = () => {
                   : 'text-neutral-600 hover:text-black hover:bg-[#f3f4f1]'
               }`}
             >
-              <MessageSquare className="w-4 h-4 text-neutral-400" />
+              <FolderKanban className="w-4 h-4 text-neutral-400" />
               <span>Messages / Inquiries</span>
             </button>
 
@@ -435,7 +525,7 @@ export const AdminDashboardPage: React.FC = () => {
                     activeTab === 'messages' ? 'bg-black text-white' : 'text-neutral-600'
                   }`}
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <FolderKanban className="w-4 h-4" />
                   <span>Messages</span>
                 </button>
                 <button
@@ -910,8 +1000,19 @@ export const AdminDashboardPage: React.FC = () => {
                                 <td className="py-4 px-6 font-mono-tech text-[11px] text-neutral-500 whitespace-nowrap">
                                   {dateFormatted}
                                 </td>
-                                <td className="py-4 px-6 text-right font-mono-tech text-xs font-bold text-black group-hover:underline">
-                                  View →
+                                <td className="py-4 px-6 text-right font-mono-tech text-xs font-bold">
+                                  <div className="flex items-center justify-end gap-2">
+                                    {sub.status === 'new' && (
+                                      <>
+                                        <button onClick={(e) => { e.stopPropagation(); setProjectToAccept(sub); }} className="px-2 py-1 bg-black text-[#c8f179] rounded hover:bg-neutral-800 transition-colors">ACCEPT</button>
+                                        <button onClick={(e) => { e.stopPropagation(); setProjectToReject(sub); }} className="px-2 py-1 border border-[#c4c7c7] text-neutral-600 hover:text-black rounded transition-colors">REJECT</button>
+                                      </>
+                                    )}
+                                    <button onClick={(e) => { e.stopPropagation(); openProjectDetails(sub); }} className="px-2 py-1 text-black underline hover:text-[#476800] transition-colors">VIEW</button>
+                                    {sub.status === 'rejected' && (
+                                      <button onClick={(e) => { e.stopPropagation(); setProjectToDelete(sub); }} className="px-2 py-1 text-red-600 hover:text-red-800 rounded transition-colors">DELETE</button>
+                                    )}
+                                  </div>
                                 </td>
                               </tr>
                             );
@@ -980,20 +1081,7 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
           )}
 
-          {/* =====================================================================
-              VIEW 3: MESSAGES / INQUIRIES (PLACEHOLDER)
-             ===================================================================== */}
-          {activeTab === 'messages' && (
-            <div className="bg-white border border-[#c4c7c7] rounded-xl p-8 sm:p-12 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 rounded-xl bg-black text-[#c8f179] mx-auto flex items-center justify-center mb-2">
-                <MessageSquare className="w-6 h-6" />
-              </div>
-              <h3 className="font-bold text-xl text-black">MESSAGES &amp; INQUIRIES</h3>
-              <p className="font-mono-tech text-xs text-neutral-500 max-w-md mx-auto leading-relaxed">
-                Direct client messaging channel and inquiry inbox will be accessible here upon activation.
-              </p>
-            </div>
-          )}
+          
 
           {/* =====================================================================
               VIEW 4: SETTINGS (PLACEHOLDER)
@@ -1258,6 +1346,56 @@ export const AdminDashboardPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* =========================================================================
+          ACTION MODALS
+         ========================================================================= */}
+      {projectToAccept && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-xl">Accept Project?</h3>
+            <p className="text-sm text-neutral-600">This will move "{projectToAccept.project_name}" to ACCEPTED status and enable chat.</p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => setProjectToAccept(null)} disabled={actionLoading} className="px-4 py-2 text-neutral-600 font-bold text-xs cursor-pointer hover:bg-neutral-100 rounded-lg transition-colors">CANCEL</button>
+              <button onClick={handleAcceptProject} disabled={actionLoading} className="px-4 py-2 bg-black text-[#c8f179] rounded-lg font-bold text-xs cursor-pointer hover:bg-neutral-800 transition-colors">{actionLoading ? 'ACCEPTING...' : 'ACCEPT PROJECT'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {projectToReject && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-xl">Reject Project</h3>
+            <p className="text-sm text-neutral-600">Rejecting "{projectToReject.project_name}". Optional reason:</p>
+            <textarea
+              value={rejectionReason}
+              onChange={(e) => setRejectionReason(e.target.value)}
+              className="w-full border border-[#c4c7c7] rounded-lg p-3 text-sm focus:border-black outline-none transition-colors"
+              rows={3}
+              placeholder="e.g., We currently do not support this technology stack..."
+            />
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => { setProjectToReject(null); setRejectionReason(''); }} disabled={actionLoading} className="px-4 py-2 text-neutral-600 font-bold text-xs cursor-pointer hover:bg-neutral-100 rounded-lg transition-colors">CANCEL</button>
+              <button onClick={handleRejectProject} disabled={actionLoading} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-xs cursor-pointer hover:bg-rose-700 transition-colors">{actionLoading ? 'REJECTING...' : 'REJECT PROJECT'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {projectToDelete && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full space-y-4 shadow-2xl">
+            <h3 className="font-bold text-xl text-rose-600">DELETE REJECTED PROJECT?</h3>
+            <p className="text-sm text-neutral-600">This will permanently remove this rejected project "{projectToDelete.project_name}" and its related project data. This action cannot be undone.</p>
+            <div className="flex justify-end gap-3 pt-2">
+              <button onClick={() => setProjectToDelete(null)} disabled={actionLoading} className="px-4 py-2 text-neutral-600 font-bold text-xs cursor-pointer hover:bg-neutral-100 rounded-lg transition-colors">CANCEL</button>
+              <button onClick={handleDeleteProject} disabled={actionLoading} className="px-4 py-2 bg-rose-600 text-white rounded-lg font-bold text-xs cursor-pointer hover:bg-rose-700 transition-colors">{actionLoading ? 'DELETING...' : 'DELETE PROJECT'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

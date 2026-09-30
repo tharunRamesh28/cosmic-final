@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight } from 'lucide-react';
+import { CursorGrid } from './CursorGrid';
 import heroVideo from '../assets/hero-product-scroll.mp4';
 
 interface HeroProps {
@@ -163,11 +164,11 @@ export const Hero: React.FC<HeroProps> = ({
       gl.ARRAY_BUFFER,
       new Float32Array([
         -1.0, -1.0,
-         1.0, -1.0,
-        -1.0,  1.0,
-        -1.0,  1.0,
-         1.0, -1.0,
-         1.0,  1.0,
+        1.0, -1.0,
+        -1.0, 1.0,
+        -1.0, 1.0,
+        1.0, -1.0,
+        1.0, 1.0,
       ]),
       gl.STATIC_DRAW
     );
@@ -371,7 +372,10 @@ export const Hero: React.FC<HeroProps> = ({
       }}
     >
       {/* Background Subtle Tech Grid */}
-      <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none -z-10" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="tech-grid absolute inset-0 opacity-40" />
+        <CursorGrid color="0, 0, 0" maxOpacity={0.25} />
+      </div>
 
       {/* Sticky Full-Viewport Stage: Positioned higher up with clean responsive padding */}
       <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-between px-4 sm:px-6 md:px-12 lg:px-16 pt-8 sm:pt-10 md:pt-12 pb-4 z-10 overflow-visible">

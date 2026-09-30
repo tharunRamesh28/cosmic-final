@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { CursorGrid } from '../components/CursorGrid';
 import { supabase } from '../lib/supabase';
 import { useRouter } from '../router';
 import { AlertCircle } from 'lucide-react';
@@ -70,7 +71,10 @@ export const AuthCallbackPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#ffffff] text-[#191c1b] relative overflow-hidden flex flex-col justify-center items-center px-4 selection:bg-[#c8f179] selection:text-[#000000]">
       {/* Subtle Light Technical Grid Background */}
-      <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none" />
+        <CursorGrid color="0, 0, 0" maxOpacity={0.25} />
+      </div>
 
       <div className="relative z-10 w-full max-w-sm bg-white border border-[#c4c7c7] rounded-2xl p-8 text-center shadow-md">
         <div className="w-10 h-10 rounded-xl bg-black text-[#c8f179] mx-auto flex items-center justify-center mb-4">

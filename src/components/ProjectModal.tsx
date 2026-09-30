@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, ArrowRight, Shield, Sparkles, Cpu, Radio, Globe, Compass, Send, CheckCircle2 } from 'lucide-react';
+import { X, Check, ArrowRight, Shield, Sparkles, Cpu, Radio, Globe, Compass, Bot, Send, CheckCircle2 } from 'lucide-react';
 import { ProjectInquiry } from '../types';
 
 interface ProjectModalProps {
@@ -36,7 +36,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     { name: 'Hardware', icon: Cpu, desc: 'PCB Design & Microcontrollers' },
     { name: 'IoT', icon: Radio, desc: 'Wireless & Sensor Networks' },
     { name: 'Web', icon: Globe, desc: 'Telemetry & Cloud Dashboards' },
-    { name: 'CAD', icon: Compass, desc: '3D Enclosures & Tooling DFM' }
+    { name: 'CAD', icon: Compass, desc: '3D Enclosures & Tooling DFM' },
+    { name: 'Robotics', icon: Bot, desc: 'Mobile Robots, Actuators & Control' }
   ];
 
   const phaseOptions = [

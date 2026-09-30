@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CursorGrid } from '../components/CursorGrid';
 import {
   Shield,
   AlertCircle,
@@ -40,7 +41,10 @@ export const LoginPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#ffffff] text-[#191c1b] relative overflow-hidden flex flex-col justify-between selection:bg-[#c8f179] selection:text-[#000000]">
       {/* Subtle Light Technical Grid Background */}
-      <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none" />
+        <CursorGrid color="0, 0, 0" maxOpacity={0.25} />
+      </div>
 
       {/* Subtle Light Ambient Radial Glow */}
       <div
@@ -148,7 +152,7 @@ export const LoginPage: React.FC = () => {
 
             <div className="pt-2 text-center">
               <span className="font-mono-tech text-[11px] text-neutral-400">
-                SECURE AUTHENTICATION # VIA SUPABASE
+                SECURE AUTHENTICATION
               </span>
             </div>
           </div>

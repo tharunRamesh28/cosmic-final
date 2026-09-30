@@ -1,10 +1,19 @@
 import React from 'react';
+import { CursorGrid } from '../components/CursorGrid';
 import { ArrowRight, Link as LinkIcon } from 'lucide-react';
 import { Link, useRouter } from '../router';
-import { HERO_PRODUCT_IMAGE } from '../data/cosmicData';
-import smartDripImg from '../assets/smartdrip_plus.jpg';
 import { HeroParallax, HeroParallaxProduct } from '../components/HeroParallax';
 import { ScrollReveal } from '../components/ScrollReveal';
+
+import airQualityMonitorImg from '../../projects/Air quality monitor.png';
+import automaticFireFightingImg from '../../projects/Automatic Fire Fighting System.png';
+import homeAutomationImg from '../../projects/Automatic Home Automation System.png';
+import irrigationDashboardImg from '../../projects/ChatGPT Image Sep 26, 2026, 07_43_14 PM.png';
+import clothesCollectorImg from '../../projects/SMART AUTOMATIC CLOTHES COLLECTOR SYSTEM.png';
+import energyMonitoringImg from '../../projects/SMART ENERGY MONITORING & AUTOMATIC LIGHTING.png';
+import medicineReminderImg from '../../projects/Smart Medicine Reminder System.png';
+import webDashboardActualImg from '../../projects/Webdashboard.png';
+import gasMonitoringDashboardImg from '../../projects/WhatsApp Image 2026-09-30 at 1.50.07 PM.jpeg';
 
 export interface EditorialProject {
   number: string;
@@ -12,105 +21,94 @@ export interface EditorialProject {
   category: string;
   description: string;
   technologies: string[];
-  image: string;
+  image: string | null;
 }
 
 export const WorksPage: React.FC = () => {
   const { navigate } = useRouter();
 
-  // Curated project images representing actual Cosmic Circuit engineering disciplines
-  const cadEnclosureImg =
-    'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=900&q=80';
-  const webDashboardImg =
-    'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80';
-  const roboticArmImg =
-    'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=900&q=80';
-  const circuitPrototypeImg =
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80';
-  const industrialSensingImg =
-    'https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=900&q=80';
-
   // 15 project images across 3 rows for the 3D Hero Parallax
+  // Strictly using ONLY actual user-uploaded project images from /projects
   const parallaxProducts: HeroParallaxProduct[] = [
     // ROW 1: 5 items
     {
       title: 'Air Quality Monitoring',
       link: '#projects-editorial',
-      thumbnail: HERO_PRODUCT_IMAGE,
+      thumbnail: airQualityMonitorImg,
     },
     {
       title: 'IoT Telemetry Platform',
       link: '#projects-editorial',
-      thumbnail: smartDripImg,
+      thumbnail: gasMonitoringDashboardImg,
     },
     {
-      title: 'CAD Enclosure Design',
+      title: 'Smart Medicine Reminder System',
       link: '#projects-editorial',
-      thumbnail: cadEnclosureImg,
+      thumbnail: medicineReminderImg,
     },
     {
-      title: 'Embedded System Controller',
+      title: 'Automatic Fire Fighting System',
       link: '#projects-editorial',
-      thumbnail: circuitPrototypeImg,
+      thumbnail: automaticFireFightingImg,
     },
     {
-      title: 'AeroNode LoRa Transceiver',
+      title: 'Smart Energy & Automatic Lighting',
       link: '#projects-editorial',
-      thumbnail: HERO_PRODUCT_IMAGE,
+      thumbnail: energyMonitoringImg,
     },
 
     // ROW 2: 5 items
     {
-      title: 'Robotic Continuous Monitor',
+      title: 'Automatic Home Automation System',
       link: '#projects-editorial',
-      thumbnail: roboticArmImg,
+      thumbnail: homeAutomationImg,
     },
     {
       title: 'Full-Stack Web Dashboard',
       link: '#projects-editorial',
-      thumbnail: webDashboardImg,
+      thumbnail: webDashboardActualImg,
     },
     {
-      title: 'Smart Medical Infusion (SmartDrip+)',
+      title: 'Automatic Clothes Collector System',
       link: '#projects-editorial',
-      thumbnail: smartDripImg,
-    },
-    {
-      title: 'PulseMatrix Industrial Gateway',
-      link: '#projects-editorial',
-      thumbnail: industrialSensingImg,
-    },
-    {
-      title: 'Connected Micro-Sensor Node',
-      link: '#projects-editorial',
-      thumbnail: HERO_PRODUCT_IMAGE,
-    },
-
-    // ROW 3: 5 items
-    {
-      title: 'Lumina Core Wearable Biosensor',
-      link: '#projects-editorial',
-      thumbnail: smartDripImg,
+      thumbnail: clothesCollectorImg,
     },
     {
       title: 'Automated Plant Watering System',
       link: '#projects-editorial',
-      thumbnail: HERO_PRODUCT_IMAGE,
+      thumbnail: irrigationDashboardImg,
     },
     {
-      title: 'Precision Industrial Sensing',
+      title: 'Environmental Air Quality Sentinel',
       link: '#projects-editorial',
-      thumbnail: industrialSensingImg,
+      thumbnail: airQualityMonitorImg,
+    },
+
+    // ROW 3: 5 items
+    {
+      title: 'Smart Clothes Protector System',
+      link: '#projects-editorial',
+      thumbnail: clothesCollectorImg,
     },
     {
-      title: 'TDR Cable Fault Locator',
+      title: 'Intelligent Plant Irrigation System',
       link: '#projects-editorial',
-      thumbnail: circuitPrototypeImg,
+      thumbnail: irrigationDashboardImg,
     },
     {
-      title: 'Complete Smart Energy Hub',
+      title: 'Multi-Gas IoT Telemetry Dashboard',
       link: '#projects-editorial',
-      thumbnail: HERO_PRODUCT_IMAGE,
+      thumbnail: gasMonitoringDashboardImg,
+    },
+    {
+      title: 'Healthcare Adherence Reminder System',
+      link: '#projects-editorial',
+      thumbnail: medicineReminderImg,
+    },
+    {
+      title: 'Energy Monitoring & Control Hub',
+      link: '#projects-editorial',
+      thumbnail: energyMonitoringImg,
     },
   ];
 
@@ -123,7 +121,7 @@ export const WorksPage: React.FC = () => {
       description:
         'An intelligent monitoring system combining environmental sensors, embedded electronics, real-time data processing and connected cloud visualization.',
       technologies: ['ESP32', 'Sensors', 'IoT', 'Cloud', 'Dashboard'],
-      image: HERO_PRODUCT_IMAGE,
+      image: airQualityMonitorImg,
     },
     {
       number: '02',
@@ -132,61 +130,61 @@ export const WorksPage: React.FC = () => {
       description:
         'Continuous telemetry fleet ingestion platform handling multi-node sensory streams, low-latency WebSocket sockets, and dynamic alerting.',
       technologies: ['MQTT', 'Nordic nRF52', 'TimescaleDB', 'React', 'WebSockets'],
-      image: smartDripImg,
+      image: gasMonitoringDashboardImg,
     },
     {
       number: '03',
-      name: 'EMBEDDED PRODUCT DEVELOPMENT',
-      category: 'EMBEDDED / HARDWARE',
+      name: 'SMART MEDICINE REMINDER SYSTEM',
+      category: 'EMBEDDED / HEALTHCARE',
       description:
-        'Complete hardware lifecycle delivery: micro-architecture design, 4-layer impedance-matched PCB layout, RTOS firmware, and industrial DFM validation.',
-      technologies: ['STM32', 'Altium 365', 'FreeRTOS', 'C++', 'DFM'],
-      image: circuitPrototypeImg,
+        'Connected medication scheduling device with multi-compartment real-time adherence tracking, audiovisual alarms, and automated notifications.',
+      technologies: ['Microcontroller', 'RTC', 'IR Sensors', 'Buzzer/OLED', 'IoT Alerting'],
+      image: medicineReminderImg,
     },
     {
       number: '04',
-      name: 'ROBOTIC MONITORING SYSTEM',
+      name: 'AUTOMATIC FIRE FIGHTING SYSTEM',
       category: 'ROBOTICS / EMBEDDED',
       description:
-        'Autonomous multi-axis inspection and optical sensor carrier for enclosed industrial spaces with fail-safe remote intervention.',
-      technologies: ['ROS2', 'CAN Bus', 'BLDC Motor Control', 'LiDAR', 'Edge AI'],
-      image: roboticArmImg,
+        'Autonomous flame-sensing robotic extinguisher equipped with multi-zone flame detection, pump actuation, and fail-safe remote intervention.',
+      technologies: ['Flame Sensors', 'Servo Actuation', 'Motor Driver', 'Autonomous Logic'],
+      image: automaticFireFightingImg,
     },
     {
       number: '05',
-      name: 'SMART ELECTRONICS SYSTEM',
-      category: 'ELECTRONICS',
+      name: 'AUTOMATIC HOME AUTOMATION SYSTEM',
+      category: 'ELECTRONICS / SMART HOME',
       description:
-        'Ultra-low-power sensing hardware engineered for multi-year coin-cell and energy-harvesting deployment in remote locations.',
-      technologies: ['ARM Cortex-M4', 'Power Gating', 'Energy Harvesting', 'BLE 5.4'],
-      image: HERO_PRODUCT_IMAGE,
+        'Intelligent multi-appliance automation hub featuring sensor-driven switching, low-latency relay actuation, and centralized remote control.',
+      technologies: ['Relay Modules', 'Wireless Control', 'Microcontroller', 'App Interface'],
+      image: homeAutomationImg,
     },
     {
       number: '06',
-      name: 'CAD PRODUCT DESIGN',
-      category: 'CAD / MECHANICAL',
+      name: 'SMART AUTOMATIC CLOTHES COLLECTOR',
+      category: 'CAD / MECHANICAL / IoT',
       description:
-        'Precision mechanical enclosures designed around circuit geometries, thermal thermal management channels, and IP67 waterproof tolerances.',
-      technologies: ['Fusion 360', 'SolidWorks', 'STEP Assemblies', 'CNC Tooling'],
-      image: cadEnclosureImg,
+        'Weather-responsive mechanical retracting enclosure engineered with rain and light optical detection to safeguard laundry automatically.',
+      technologies: ['Rain Sensor', 'Stepper / DC Motor', 'Microcontroller', 'Mechanical Rig'],
+      image: clothesCollectorImg,
     },
     {
       number: '07',
       name: 'IoT DASHBOARD & OBSERVABILITY',
       category: 'WEB / IoT',
       description:
-        'High-density operational dashboard visualizing machine metrics, firmware health logs, and remote OTA package dispatching.',
-      technologies: ['React', 'TypeScript', 'Tailwind', 'GraphQL', 'Grafana'],
-      image: webDashboardImg,
+        'High-density operational dashboard visualizing machine metrics, environmental sensor health logs, and telemetry dispatching.',
+      technologies: ['React', 'TypeScript', 'Tailwind', 'Real-Time Charts', 'WebSockets'],
+      image: webDashboardActualImg,
     },
     {
       number: '08',
-      name: 'INTELLIGENT EMBEDDED SYSTEM',
-      category: 'EMBEDDED / AI',
+      name: 'AUTOMATED PLANT WATERING SYSTEM',
+      category: 'EMBEDDED / AGRICULTURE',
       description:
-        'On-device neural inference classifying acoustic and vibration anomalies at the physical edge without transmitting raw audio.',
-      technologies: ['TinyML', 'Edge Impulse', 'TensorFlow Lite', 'I2S Audio'],
-      image: smartDripImg,
+        'Precision soil moisture monitoring and algorithmic pump dispensing circuit ensuring automated hydration for domestic and greenhouse plants.',
+      technologies: ['Soil Hygrometer', 'Submersible Pump', 'Relay Driver', 'ESP32'],
+      image: irrigationDashboardImg,
     },
     {
       number: '09',
@@ -195,16 +193,16 @@ export const WorksPage: React.FC = () => {
       description:
         'Rapid turn Rev-A prototype bench fabrication, oscilloscopic verification, signal integrity analysis, and automated test fixtures.',
       technologies: ['KiCad', 'SMD Assembly', 'Rigol Analysis', 'Bed-of-Nails FCT'],
-      image: circuitPrototypeImg,
+      image: null,
     },
     {
       number: '10',
-      name: 'COMPLETE PRODUCT SYSTEM',
-      category: 'COMPLETE PRODUCTS',
+      name: 'SMART ENERGY MONITORING & LIGHTING',
+      category: 'COMPLETE PRODUCTS / IoT',
       description:
-        'Turnkey engineering combining CAD chassis, certified electronics, hardened firmware, and cloud control into a factory-shippable product.',
-      technologies: ['Full-System Engineering', 'ISO 9001', 'FCC Pre-scan', 'CE Pack'],
-      image: HERO_PRODUCT_IMAGE,
+        'Turnkey high-voltage AC load sensing, current/power metering, OLED diagnostic readout, and automated ambient lighting relay control.',
+      technologies: ['Current Transformer', 'AC Relay', 'OLED Display', 'Power Gating'],
+      image: energyMonitoringImg,
     },
   ];
 
@@ -265,7 +263,10 @@ export const WorksPage: React.FC = () => {
   return (
     <div className="w-full relative text-[#191c1b] selection:bg-[#c8f179] selection:text-[#000000] overflow-x-hidden">
       {/* Background Subtle Tech Grid */}
-      <div className="tech-grid absolute inset-0 opacity-30 pointer-events-none -z-10" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="tech-grid absolute inset-0 opacity-30 pointer-events-none -z-10" />
+        <CursorGrid color="0, 0, 0" maxOpacity={0.25} />
+      </div>
 
       {/* ==================================================
           1 & 2. 3D HERO PARALLAX SHOWCASE (ACETERNITY STYLE)
@@ -326,18 +327,34 @@ export const WorksPage: React.FC = () => {
                   </div>
 
                   {/* Thumbnail Preview Banner */}
-                  <div className="h-44 sm:h-52 w-full rounded-xl overflow-hidden mb-5 bg-[#f3f4f1] relative border border-[#c4c7c7]/40">
-                    <img
-                      src={project.image}
-                      alt={project.name}
-                      className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60" />
-                    <span className="absolute bottom-3 left-3 text-white font-mono-tech text-[11px] font-bold tracking-wider">
-                      COSMIC // ENG_REF_{project.number}
-                    </span>
-                  </div>
+                  {project.image ? (
+                    <div className="h-44 sm:h-52 w-full rounded-xl overflow-hidden mb-5 bg-[#f3f4f1] relative border border-[#c4c7c7]/40">
+                      <img
+                        src={project.image}
+                        alt={project.name}
+                        className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-60 pointer-events-none" />
+                      <span className="absolute bottom-3 left-3 text-white font-mono-tech text-[11px] font-bold tracking-wider pointer-events-none">
+                        COSMIC // ENG_REF_{project.number}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="h-28 sm:h-32 w-full rounded-xl overflow-hidden mb-5 bg-[#f3f4f1] relative border border-dashed border-[#c4c7c7]/60 flex items-center justify-between px-6">
+                      <div className="flex flex-col">
+                        <span className="font-mono-tech text-xs font-bold text-[#191c1b] tracking-wider uppercase">
+                          CUSTOM ARCHITECTURE BUILD
+                        </span>
+                        <span className="font-mono-tech text-[11px] text-[#444748] mt-1">
+                          Proprietary Hardware Specification · Documentation on Request
+                        </span>
+                      </div>
+                      <span className="font-mono-tech text-[10px] text-[#476800] font-bold bg-[#c8f179]/20 px-2 py-0.5 rounded border border-[#c8f179]/40">
+                        ENG_REF_{project.number}
+                      </span>
+                    </div>
+                  )}
 
                   {/* Project Title */}
                   <h3 className="font-display-tech text-xl sm:text-2xl font-black text-[#000000] mb-3 tracking-tight group-hover:text-[#476800] transition-colors leading-snug">
@@ -386,7 +403,10 @@ export const WorksPage: React.FC = () => {
                   'radial-gradient(ellipse at bottom center, #c8f179 0%, #476800 40%, transparent 80%)',
               }}
             />
-            <div className="tech-grid-dark absolute inset-0 opacity-20 pointer-events-none" />
+            <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="tech-grid-dark absolute inset-0 opacity-20 pointer-events-none" />
+        <CursorGrid color="185, 232, 106" maxOpacity={0.25} />
+      </div>
 
             <div className="relative z-10 max-w-3xl">
               <span className="font-mono-tech text-xs text-[#c8f179] font-bold uppercase tracking-widest block mb-4">

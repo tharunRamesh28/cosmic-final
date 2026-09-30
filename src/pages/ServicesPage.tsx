@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, Activity, Cpu, Box, Terminal } from 'lucide-react';
+import { CursorGrid } from '../components/CursorGrid';
+import { ArrowRight, Check, Activity, Cpu, Box, Terminal, Bot } from 'lucide-react';
 import { Link, useRouter } from '../router';
 import { HERO_PRODUCT_IMAGE } from '../data/cosmicData';
 import smartDripImg from '../assets/smartdrip_plus.jpg';
+import roboticsImg from '../../projects/Automatic Fire Fighting System.png';
+import homeAutomationImg from '../../projects/Automatic Home Automation System.png';
+import smartEnergyImg from '../../projects/SMART ENERGY MONITORING & AUTOMATIC LIGHTING.png';
+import webDevImg from '../../projects/WhatsApp Image 2026-09-30 at 1.50.07 PM.jpeg';
 
 interface CompactService {
   id: string;
@@ -19,7 +24,7 @@ interface CompactService {
 export const ServicesPage: React.FC = () => {
   const { navigate } = useRouter();
 
-  // Exactly four services according to specifications
+  // Five services including Robotics
   const services: CompactService[] = [
     {
       id: 'iot',
@@ -33,7 +38,7 @@ export const ServicesPage: React.FC = () => {
         'Real-Time Monitoring',
         'Cloud Integration',
       ],
-      image: smartDripImg,
+      image: homeAutomationImg,
       badge: 'CONNECTED ECOSYSTEM',
       icon: Activity,
     },
@@ -51,7 +56,7 @@ export const ServicesPage: React.FC = () => {
         'Prototype Development',
         'Product Development',
       ],
-      image: HERO_PRODUCT_IMAGE,
+      image: smartEnergyImg,
       badge: 'PROTOTYPE → PRODUCT',
       icon: Cpu,
     },
@@ -85,17 +90,39 @@ export const ServicesPage: React.FC = () => {
         'Databases',
         'Cloud Integration',
       ],
-      image:
-        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
+      image: webDevImg,
       badge: 'FULL-STACK DASHBOARDS',
       icon: Terminal,
+    },
+    {
+      id: 'robotics',
+      num: '05',
+      title: 'ROBOTICS',
+      description:
+        'Design and development of intelligent robotic systems for automation, monitoring, inspection, and real-world applications.',
+      capabilities: [
+        'Mobile Robotics',
+        'Embedded Robotic Control',
+        'Motor Control',
+        'Sensor Integration',
+        'Autonomous Systems',
+        'Robotic Automation',
+        'Inspection Robots',
+        'IoT-Connected Robotics',
+      ],
+      image: roboticsImg,
+      badge: 'INTELLIGENT AUTOMATION',
+      icon: Bot,
     },
   ];
 
   return (
     <div className="w-full relative text-[#191c1b] selection:bg-[#c8f179] selection:text-[#000000]">
       {/* Background Subtle Tech Grid */}
-      <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none -z-10" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="tech-grid absolute inset-0 opacity-40 pointer-events-none -z-10" />
+        <CursorGrid color="0, 0, 0" maxOpacity={0.25} />
+      </div>
 
       {/* 1. SERVICES PAGE HEADING (Compact & Professional) */}
       <section className="px-6 md:px-16 pt-10 sm:pt-14 md:pt-16 pb-8 md:pb-12 max-w-[1280px] mx-auto border-b border-[#c4c7c7]/30">

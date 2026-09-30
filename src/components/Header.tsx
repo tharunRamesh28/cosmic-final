@@ -1,7 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Menu, X, LogOut, User as UserIcon, ClipboardList } from 'lucide-react';
 import { useRouter } from '../router';
 import { useAuth } from '../lib/AuthContext';
+import { motion, useMotionValue, useSpring, useTransform, MotionValue } from 'motion/react';
+
+const MagnifyHeaderItem: React.FC<{
+  children: React.ReactNode;
+  mouseX: MotionValue<number>;
+}> = ({ children, mouseX }) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const distance = useTransform(mouseX, (val: number) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
+    return val - bounds.x - bounds.width / 2;
+  });
+
+  const scaleSync = useTransform(distance, [-120, 0, 120], [1, 1.25, 1]);
+  const scale = useSpring(scaleSync, { mass: 0.1, stiffness: 150, damping: 12 });
+
+  return (
+    <motion.div ref={ref} style={{ scale }} className="flex items-center justify-center shrink-0 origin-center z-10 relative">
+      {children}
+    </motion.div>
+  );
+};
 
 interface HeaderProps {
   onStartProject?: () => void;
@@ -19,6 +41,18 @@ export const Header: React.FC<HeaderProps> = ({
   const { user, isAdmin, signOut } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+
+  const mouseX = useMotionValue(Infinity);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (window.matchMedia('(hover: hover)').matches) {
+      mouseX.set(e.clientX);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(Infinity);
+  };
 
   const handleSignOut = async () => {
     handleClose();
@@ -103,10 +137,15 @@ export const Header: React.FC<HeaderProps> = ({
           </a>
 
           {/* Top-Right Area: User actions and menu button */}
-          <div className="flex items-center gap-2.5">
+          <div 
+            className="flex items-center gap-4"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             {user ? (
-              <div className="flex items-center gap-2">
-                <button
+              <div className="flex items-center gap-4">
+                <MagnifyHeaderItem mouseX={mouseX}>
+                  <button
                   onClick={() => navigate('/my-requests')}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono-tech text-xs font-bold transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer ${
                     path === '/my-requests'
@@ -120,7 +159,9 @@ export const Header: React.FC<HeaderProps> = ({
                   <ClipboardList className="w-3.5 h-3.5 text-[#476800]" />
                   <span className="hidden sm:inline">MY REQUESTS</span>
                 </button>
+                </MagnifyHeaderItem>
 
+                <MagnifyHeaderItem mouseX={mouseX}>
                 <button
                   onClick={() => navigate('/my-requests')}
                   className="cursor-pointer focus:outline-none"
@@ -145,7 +186,9 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
                   )}
                 </button>
+                </MagnifyHeaderItem>
 
+                <MagnifyHeaderItem mouseX={mouseX}>
                 <button
                   onClick={handleSignOut}
                   title={`Sign out (${user.email || 'User'})`}
@@ -158,8 +201,10 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <LogOut className="w-4 h-4" />
                 </button>
+                </MagnifyHeaderItem>
               </div>
             ) : (
+              <MagnifyHeaderItem mouseX={mouseX}>
               <button
                 onClick={() => navigate('/login')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono-tech text-xs font-bold transition-all duration-200 shadow-xs hover:-translate-y-0.5 cursor-pointer ${
@@ -172,8 +217,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <UserIcon className="w-3.5 h-3.5 text-[#476800]" />
                 <span className="hidden sm:inline">LOGIN</span>
               </button>
+              </MagnifyHeaderItem>
             )}
 
+            <MagnifyHeaderItem mouseX={mouseX}>
             <button
               onClick={handleOpen}
               className={`p-2.5 rounded-lg border transition-all duration-200 shadow-xs hover:-translate-y-0.5 hover:shadow-sm ${isCircuitShaderActive
@@ -185,6 +232,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Menu className="w-5 h-5" />
             </button>
+            </MagnifyHeaderItem>
           </div>
         </div>
       </header>

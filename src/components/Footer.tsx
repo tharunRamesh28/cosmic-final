@@ -1,4 +1,5 @@
 import React from 'react';
+import { CursorGrid } from './CursorGrid';
 import { Share2, Terminal, Shield, ArrowUpRight } from 'lucide-react';
 import { Link, useRouter } from '../router';
 
@@ -47,7 +48,10 @@ export const Footer: React.FC<FooterProps> = ({ onStartProject }) => {
         />
 
         {/* Technical baseline grid pattern over the glow */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="tech-grid-dark absolute inset-0 opacity-15" />
+        <CursorGrid color="185, 232, 106" maxOpacity={0.25} />
+      </div>
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 md:px-16 py-16 md:py-24 relative z-10">
@@ -173,7 +177,7 @@ export const Footer: React.FC<FooterProps> = ({ onStartProject }) => {
 
         {/* Bottom Legal bar */}
         <div className="pt-8 border-t border-neutral-900/90 flex flex-col sm:flex-row justify-between items-center gap-4 font-mono-tech text-xs text-neutral-400">
-          <p>© 2024 Cosmic Circuit. All rights reserved.</p>
+          <p>© 2026 Cosmic Circuit. All rights reserved.</p>
           <p className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-[#c8f179] shadow-[0_0_8px_#c8f179]"></span>
             <span className="text-neutral-300">SYSTEM NODE: ACTIVE (0.01mm TOLERANCE)</span>

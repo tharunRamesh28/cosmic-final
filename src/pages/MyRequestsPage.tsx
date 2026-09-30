@@ -140,6 +140,8 @@ export const MyRequestsPage: React.FC = () => {
   const [editError, setEditError] = useState<string | null>(null);
 
   // Files modal or state
+  // Chat state
+        
   const [viewingFilesForId, setViewingFilesForId] = useState<string | null>(null);
   const [projectFiles, setProjectFiles] = useState<ProjectFile[]>([]);
   const [loadingFiles, setLoadingFiles] = useState<boolean>(false);
@@ -219,6 +221,7 @@ export const MyRequestsPage: React.FC = () => {
     setProjectFiles([]);
   };
 
+  
   // Open Edit Modal
   const openEditModal = (project: ProjectSubmission) => {
     setEditingProject(project);
@@ -328,6 +331,7 @@ export const MyRequestsPage: React.FC = () => {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-[#f9faf7] text-[#191c1b] pb-24">
@@ -572,6 +576,8 @@ export const MyRequestsPage: React.FC = () => {
                         <FileText className="w-3.5 h-3.5" />
                         <span>ATTACHMENTS</span>
                       </button>
+
+                      
                     </div>
                   </div>
 
@@ -891,6 +897,8 @@ export const MyRequestsPage: React.FC = () => {
           </div>
         </div>
       )}
+
+
     </div>
   );
 };

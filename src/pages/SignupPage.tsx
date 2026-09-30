@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CursorGrid } from '../components/CursorGrid';
 import { Shield, Lock, Mail, User, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useRouter, Link } from '../router';
@@ -81,7 +82,10 @@ export const SignupPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-[#F5F5F0] relative overflow-hidden flex flex-col justify-between selection:bg-[#B7FF3C] selection:text-[#0A0A0A]">
       {/* Subtle Engineering Grid Background */}
-      <div className="tech-grid-dark absolute inset-0 opacity-25 pointer-events-none" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        <div className="tech-grid-dark absolute inset-0 opacity-25 pointer-events-none" />
+        <CursorGrid color="185, 232, 106" maxOpacity={0.25} />
+      </div>
 
       {/* Subtle Green Ambient Glow */}
       <div

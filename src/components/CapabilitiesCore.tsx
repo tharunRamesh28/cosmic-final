@@ -1,5 +1,5 @@
 import React from 'react';
-import { Cpu, Radio, Globe, Compass } from 'lucide-react';
+import { Cpu, Radio, Globe, Compass, Bot } from 'lucide-react';
 import { CAPABILITIES } from '../data/cosmicData';
 
 interface CapabilitiesCoreProps {
@@ -17,6 +17,8 @@ export const CapabilitiesCore: React.FC<CapabilitiesCoreProps> = () => {
         return <Globe className="w-7 h-7 text-[#000000]" />;
       case 'Compass':
         return <Compass className="w-7 h-7 text-[#000000]" />;
+      case 'Bot':
+        return <Bot className="w-7 h-7 text-[#000000]" />;
       default:
         return <Cpu className="w-7 h-7 text-[#000000]" />;
     }
@@ -35,8 +37,8 @@ export const CapabilitiesCore: React.FC<CapabilitiesCoreProps> = () => {
         </h2>
       </div>
 
-      {/* 4-Column Card Grid — Pure display cards with green glowing border on cursor hover */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* 5-Column Responsive Card Grid — Pure display cards with green glowing border on cursor hover */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
         {CAPABILITIES.map((cap) => (
           <div
             key={cap.id}

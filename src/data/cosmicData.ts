@@ -146,6 +146,26 @@ export const CAPABILITIES: ServiceCapability[] = [
     ],
     techStack: ['SolidWorks', 'Autodesk Fusion 360', 'KeyShot Rendering', '3D PolyJet & SLA Prototyping', 'ANSYS Mechanical'],
     sampleDeliverables: ['3D STEP / IGES Master Assemblies', '2D Dimensioned Engineering Drawings', 'Injection Mold Draft Angle Analysis', 'Photorealistic Product Renders']
+  },
+  {
+    id: 'robotics',
+    title: 'Robotics',
+    tag: 'AUTONOMOUS_NODE_05',
+    shortDesc: 'Design and development of intelligent robotic systems for automation, monitoring, inspection, and real-world applications.',
+    fullDesc: 'Design and development of intelligent robotic systems for automation, monitoring, inspection, and real-world applications. We integrate motor drive electronics, embedded control loops, kinematic sensor fusion, and autonomous path planning.',
+    iconName: 'Bot',
+    features: [
+      'Mobile Robotics',
+      'Embedded Robotic Control',
+      'Motor Control',
+      'Sensor Integration',
+      'Autonomous Systems',
+      'Robotic Automation',
+      'Inspection Robots',
+      'IoT-Connected Robotics'
+    ],
+    techStack: ['ROS2', 'CAN Bus', 'BLDC Motor Control', 'LiDAR', 'Edge AI', 'STM32', 'FreeRTOS'],
+    sampleDeliverables: ['Kinematic Architecture Schematics', 'Motor Driver Hardware Files', 'Embedded Motion Control Firmware', 'Sensor Fusion & Teleoperation Suite']
   }
 ];
 

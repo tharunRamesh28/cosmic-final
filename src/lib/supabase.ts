@@ -24,7 +24,8 @@ export interface ProjectSubmission {
   project_type: string;
   project_description: string;
   expected_timeline: string | null;
-  status: 'new' | 'reviewing' | 'contacted' | 'in_progress' | 'completed' | 'rejected';
+  status: 'new' | 'reviewing' | 'contacted' | 'in_progress' | 'completed' | 'rejected' | 'accepted';
+
   created_at: string;
 }
 
@@ -36,4 +37,15 @@ export interface ProjectFile {
   file_size: number | null;
   file_type: string | null;
   created_at: string;
+}
+
+export interface ProjectMessage {
+  id: string;
+  project_id: string;
+  sender_id?: string | null;
+  sender_role: 'USER' | 'ADMIN' | 'SYSTEM';
+  message: string;
+  is_read: boolean;
+  created_at: string;
+  expires_at?: string;
 }

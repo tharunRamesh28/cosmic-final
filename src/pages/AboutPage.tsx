@@ -3,6 +3,9 @@ import { ArrowRight, CheckCircle2, ShieldCheck, ArrowUpRight, Instagram, Linkedi
 import { Link } from '../router';
 import { ScrollReveal } from '../components/ScrollReveal';
 
+import karthikPhoto from '../../projects/members/WhatsApp Image 2026-09-30 at 3.03.56 PM.jpeg';
+import tharunPhoto from '../../projects/members/Gemini_Generated_Image_jguqo3jguqo3jguq.png';
+
 export const AboutPage: React.FC = () => {
   const expertiseList = [
     'Electronics',
@@ -15,36 +18,25 @@ export const AboutPage: React.FC = () => {
 
   const teamMembers = [
     {
-      name: 'Dr. Marcus Vance',
+      name: 'Karthik Arjun',
       role: 'FOUNDER',
-      expertise: 'Hardware Architecture & High-Density Circuit Systems',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&h=750&q=80',
+      expertise: 'CAD Designer, Embedded Engineer and Hardware Verification Engineer',
+      image: karthikPhoto,
       socials: {
-        instagram: 'https://instagram.com',
-        linkedin: 'https://linkedin.com',
-        email: 'mailto:marcus@cosmiccircuit.com'
+        instagram: 'https://www.instagram.com/cosmic_circuits_',
+        linkedin: 'https://www.linkedin.com/in/karthik-arjun-kalavakunta-14b7b7397?utm_source=share_via&utm_content=profile&utm_medium=member_android',
+        email: 'mailto:kalavakuntakarthik8@gmail.com'
       }
     },
     {
-      name: 'Elena Rostova',
-      role: 'CO-FOUNDER',
-      expertise: 'Industrial Product Design & Precision Mechanical CAD',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&h=750&q=80',
+      name: 'Tharun',
+      role: 'CO-FOUNDER & CEO',
+      expertise: 'IoT Engineer, Full Stack Developer, Problem Solver',
+      image: tharunPhoto,
       socials: {
-        instagram: 'https://instagram.com',
-        linkedin: 'https://linkedin.com',
-        email: 'mailto:elena@cosmiccircuit.com'
-      }
-    },
-    {
-      name: 'David Chen',
-      role: 'CEO',
-      expertise: 'Product Realization, Supply Chain & Hardware Operations',
-      image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&h=750&q=80',
-      socials: {
-        instagram: 'https://instagram.com',
-        linkedin: 'https://linkedin.com',
-        email: 'mailto:david@cosmiccircuit.com'
+        instagram: 'https://www.instagram.com/cosmic_circuits_',
+        linkedin: 'https://www.linkedin.com/in/tharun-ramesh25',
+        email: 'mailto:rameshtharun067@gmail.com'
       }
     },
     {
@@ -122,8 +114,8 @@ export const AboutPage: React.FC = () => {
             </p>
           </div>
 
-          {/* 4-column layout on desktop, 2x2 layout on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {/* 3-column layout on desktop, perfectly centered */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-[1100px] mx-auto">
             {teamMembers.map((member) => (
               <div
                 key={member.role}
@@ -150,39 +142,49 @@ export const AboutPage: React.FC = () => {
                     <div className="font-mono-tech text-[11px] text-[#74a81e] font-semibold mb-1.5">
                       {member.role}
                     </div>
-                    <p className="font-display-tech text-xs text-[#444748] leading-relaxed">
-                      {member.expertise}
-                    </p>
+                    {member.expertise && (
+                      <p className="font-display-tech text-xs text-[#444748] leading-relaxed">
+                        {member.expertise}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Social Navigation Icons at bottom of card */}
-                  <div className="flex items-center gap-2 pt-3 mt-3 border-t border-[#c4c7c7]/30">
-                    <a
-                      href={member.socials.instagram}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
-                      title={`${member.name} on Instagram`}
-                    >
-                      <Instagram className="w-3.5 h-3.5" />
-                    </a>
-                    <a
-                      href={member.socials.linkedin}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
-                      title={`${member.name} on LinkedIn`}
-                    >
-                      <Linkedin className="w-3.5 h-3.5" />
-                    </a>
-                    <a
-                      href={member.socials.email}
-                      className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
-                      title={`Email ${member.name}`}
-                    >
-                      <Mail className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
+                  {/* Social Navigation Icons at bottom of card (rendered only if valid links exist) */}
+                  {(member.socials.instagram || member.socials.linkedin || member.socials.email) && (
+                    <div className="flex items-center gap-2 pt-3 mt-3 border-t border-[#c4c7c7]/30">
+                      {member.socials.instagram && (
+                        <a
+                          href={member.socials.instagram}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
+                          title={`${member.name} on Instagram`}
+                        >
+                          <Instagram className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      {member.socials.linkedin && (
+                        <a
+                          href={member.socials.linkedin}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
+                          title={`${member.name} on LinkedIn`}
+                        >
+                          <Linkedin className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      {member.socials.email && (
+                        <a
+                          href={member.socials.email}
+                          className="w-7 h-7 rounded-md border border-[#c4c7c7]/60 bg-[#f9faf7] flex items-center justify-center text-[#444748] hover:text-[#000000] hover:bg-[#c8f179]/20 hover:border-[#476800] transition-colors"
+                          title={`Email ${member.name}`}
+                        >
+                          <Mail className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
